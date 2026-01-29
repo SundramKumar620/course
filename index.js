@@ -1,13 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 import userRouter from './routes/user.routes.js';
 import courseRouter from './routes/course.routes.js';
 import adminRouter from './routes/admin.routes.js';
 
 mongoose.set("strictQuery", true);
 
+
+
 const app = express();
 const port = 3000;
+dotenv.config();
 
 app.use(express.json());
 app.use("/api/v1/user", userRouter);
@@ -16,7 +20,7 @@ app.use("/api/v1/admin", adminRouter);
 
 const startServer = async () => {
   try {
-    await mongoose.connect("mongodb+srv://asustufa15521_db_user:Cp4kTU3QMlif3VuV@learingdb.brlufgj.mongodb.net/course-backend");
+    await mongoose.connect(process.env.db_url);
     console.log("DB connected successfully");
 
     app.listen(port, () => {
