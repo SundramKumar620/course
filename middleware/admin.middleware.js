@@ -1,22 +1,40 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
-export const adminmiddleware = async (req, res, next) => {
-    const token = req.headers.token
-
-    if (!token) {
-        return res.json({ message: "Unauthorized Access" })
-    }
+export const adminMiddleware = async (req, res, next) => {
     try {
-        const decoded = jsonwebtoken.verify(token, process.env.ADMIN_JWT_SECRET)
-
-        if (!decoded) {
-            return res.json({ message: "Unauthorized Access" })
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ 
+                message: 'Access token required' 
+            });
         }
-        req.adminId = decoded.id
-        next()
 
+        const token = authHeader.split(' ')[1];
+
+        const decoded = jwt.verify(token, process.env.ADMIN_JWT_SECRET);
+        
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ 
+                message: 'Invalid token' 
+            });
+        }
+
+        req.adminId = decoded.id;
+        next();
     } catch (error) {
-
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ 
+                message: 'Invalid token' 
+            });
+        } else if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ 
+                message: 'Token expired' 
+            });
+        }
+        
+        return res.status(500).json({ 
+            message: 'Internal server error' 
+        });
     }
-
-}
+};

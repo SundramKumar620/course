@@ -1,15 +1,23 @@
-import express from "express"
-const adminRouter = express.Router()
+import express from 'express';
+import { adminMiddleware } from '../middleware/admin.middleware.js';
+import { 
+    register, 
+    login, 
+    getAllCourses, 
+    getCourse, 
+    updateCourse, 
+    deleteCourse, 
+    createCourse 
+} from '../controller/admin.controller.js';
 
-import { register, login, getallcourse, getcourse, updatecourse, deletecourse, createcourse } from "../controller/admin.controller.js"
+const router = express.Router();
 
+router.post('/register', register);
+router.post('/login', login);
+router.post('/courses', adminMiddleware, createCourse);
+router.get('/courses', adminMiddleware, getAllCourses);
+router.get('/courses/:id', adminMiddleware, getCourse);
+router.put('/courses/:id', adminMiddleware, updateCourse);
+router.delete('/courses/:id', adminMiddleware, deleteCourse);
 
-adminRouter.post("/register", register)
-adminRouter.post("/login", login)
-adminRouter.post("/create-course", createcourse)
-adminRouter.get("/all-courses", getallcourse)
-adminRouter.get("/course/:id", getcourse)
-adminRouter.put("/update-course/:id", updatecourse)
-adminRouter.delete("/delete-course/:id", deletecourse)
-
-export default adminRouter
+export default router;

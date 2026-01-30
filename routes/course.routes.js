@@ -1,10 +1,11 @@
-import express from "express"
-const courseRouter = express.Router()
+import express from 'express';
+import { userMiddleware } from '../middleware/user.middleware.js';
+import { getAllCourses, getCourseById, buyCourse } from '../controller/course.controller.js';
 
-import { getallcourse, perviewcourse, buycourse } from "../controller/course.controller.js"
+const router = express.Router();
 
-courseRouter.get("/", getallcourse)
-courseRouter.get("/perview", perviewcourse)
-courseRouter.post("/buy", buycourse)
+router.get('/', getAllCourses);
+router.get('/:id', getCourseById);
+router.post('/:id/buy', userMiddleware, buyCourse);
 
-export default courseRouter
+export default router;

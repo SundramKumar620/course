@@ -1,35 +1,45 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import express from 'express';
+import dotenv from 'dotenv';
+import { connectDB } from './db.js';
 import userRouter from './routes/user.routes.js';
 import courseRouter from './routes/course.routes.js';
 import adminRouter from './routes/admin.routes.js';
 
-mongoose.set("strictQuery", true);
-
-
-
-const app = express();
-const port = 3000;
 dotenv.config();
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/course", courseRouter);
-app.use("/api/v1/admin", adminRouter);
+
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/courses', courseRouter);
+app.use('/api/v1/admin', adminRouter);
+
+app.use((req, res) => {
+    res.status(404).json({ 
+        message: 'Route not found' 
+    });
+});
+
+app.use((error, req, res, next) => {
+    console.error('Unhandled error:', error);
+    res.status(500).json({ 
+        message: 'Internal server error' 
+    });
+});
 
 const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.db_url);
-    console.log("DB connected successfully");
-
-    app.listen(port, () => {
-      console.log(`Backend running on port ${port}`);
-    });
-  } catch (err) {
-    console.error("Failed to connect to DB", err);
-    process.exit(1); // stops the backend if DB fails
-  }
+    try {
+        await connectDB();
+        
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
 };
 
 startServer();
