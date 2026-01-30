@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
-    // register logic
 
     const { email, password, name } = req.body;
 
@@ -60,17 +59,90 @@ export const login = async (req, res) => {
     });
 }
 export const getallcourse = async (req, res) => {
-    // get all course logic
+    const creatorid = req.body.adminid
+
+    const courses = await courseModel.find({ creatorid })
+
+    return res.json({
+        message: "Courses fetched successfully",
+        courses
+    })
 }
+
 export const getcourse = async (req, res) => {
-    // get course logic
+
+    const courseid = req.params.courseid
+    const creatorid = req.body.adminid
+
+    const course = await courseModel.findOne({ _id: courseid, creatorid })
+
+    return res.json({
+        message: "Course fetched successfully",
+        course
+    })
 }
+
 export const updatecourse = async (req, res) => {
     // update course logic
+    const { title, description, price, thumbnail } = req.body
+    const courseid = req.params.courseid
+    const creatorid = req.body.adminid
+
+    if (!title || !description || !price || !thumbnail || !courseid) {
+        return res.json({ message: "All fields required" })
+    }
+
+    const course = await courseModel.updateOne({ _id: courseid, creatorid }, {
+        title,
+        description,
+        price,
+        thumbnail
+    })
+
+    return res.json({
+        message: "Course updated successfully",
+        courseId: courseid
+    })
+
 }
 export const deletecourse = async (req, res) => {
-    // delete course logic
+
+    const courseid = req.params.courseid
+    const creatorid = req.body.adminid
+
+    const course = await courseModel.deleteOne({ _id: courseid, creatorid })
+
+    return res.json({
+        message: "Course deleted successfully",
+        courseId: courseid
+    })
 }
 export const createcourse = async (req, res) => {
-    // create course logic
+
+    const { title, description, price, thumbnail } = req.body
+    const creatorid = req.body.adminid
+
+    if (!title || !description || !price || !thumbnail || !creatorid) {
+        return res.json({ message: "All fields required" })
+    }
+    const courseExist = await courseModel.findOne({ title })
+
+    if (courseExist) {
+        return res.json({ message: "Course already exists" })
+    }
+
+    const newCourse = await courseModel.create({
+        title,
+        description,
+        price,
+        thumbnail,
+        creatorid
+    })
+
+    return res.json({
+        message: "Course created successfully",
+        courseId: newCourse._id
+    })
+
+
 }

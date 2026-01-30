@@ -63,6 +63,15 @@ export const login = async (req, res) => {
 };
 
 
-export const getuserpurchase = async (req, res) => {
-    // get user purchase logic
-}
+export const getUserPurchase = async (req, res) => {
+  const userid = req.userId;
+
+  const purchases = await purchaseModel
+    .find({ user: userid })
+    .populate("course");
+
+  return res.json({
+    message: "Purchases fetched successfully",
+    purchases
+  });
+};
