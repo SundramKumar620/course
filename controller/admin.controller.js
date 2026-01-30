@@ -1,4 +1,3 @@
-
 import { userModel, courseModel, adminModel, purchaseModel } from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
@@ -52,7 +51,7 @@ export const login = async (req, res) => {
     }
     const token = jwt.sign(
         { id: adminExist._id },
-        process.env.JWT_SECRET,
+        process.env.ADMIN_JWT_SECRET,
         { expiresIn: "7d" }
     );
     return res.json({

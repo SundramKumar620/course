@@ -14,7 +14,8 @@ const courseSchema = new Schema({
     title: { type: String, unique: true, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    thumbnail: { type: String, required: true }
+    thumbnail: { type: String, required: true },
+    creatorid: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true }
 });
 
 const adminSchema = new Schema({
